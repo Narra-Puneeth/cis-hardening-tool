@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Security Checklist Tool</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="app-container" id="app">
+        <header class="header-modern">
+            <div class="header-left">
+                <div class="app-logo">
+                    <i class="fas fa-shield-alt"></i>
+                    <span>SecureCheck</span>
+                </div>
+                <h1>Security Configuration Checklist</h1>
+            </div>
+            <div class="header-controls">
+                <div class="theme-toggle" id="theme-toggle" title="Toggle Dark Mode">
+                    <i class="fas fa-moon"></i>
+                </div>
+                <div id="os-info" class="os-badge-modern">
+                    <i class="fas fa-desktop"></i>
+                    <span></span>
+                </div>
+            </div>
+        </header>
+
+        <div class="toolbar">
+            <div class="toolbar-left">
+                <div class="search-container">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="search-input" placeholder="Search checklist items..." />
+                    <button id="clear-search" class="clear-btn" style="display: none;">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="filter-container">
+                    <select id="filter-select">
+                        <option value="all">All Items</option>
+                        <option value="completed">Completed</option>
+                        <option value="pending">Pending</option>
+                    </select>
+                </div>
+            </div>
+            <div class="toolbar-right">
+                <button id="bulk-complete" class="action-btn" title="Mark All as Complete">
+                    <i class="fas fa-check-double"></i>
+                    Complete All
+                </button>
+                <button id="bulk-reset" class="action-btn secondary" title="Reset All">
+                    <i class="fas fa-undo"></i>
+                    Reset All
+                </button>
+                <button id="export-btn" class="action-btn primary" title="Export Report">
+                    <i class="fas fa-download"></i>
+                    Export
+                </button>
+            </div>
+        </div>
+
+        <main id="main-content" class="main-modern">
+            <div id="loading" class="loading-modern">
+                <div class="loading-spinner">
+                    <div class="spinner"></div>
+                </div>
+                <p>Loading security checklist configuration...</p>
+            </div>
+
+            <!-- Dynamic Checklist Container -->
+            <div id="dynamic-checklist" class="checklist-container-modern" style="display: none;">
+                <!-- Content will be dynamically generated from JSON -->
+            </div>
+
+            <!-- Unsupported OS -->
+            <div id="unsupported-os" class="unsupported-container" style="display: none;">
+                <div class="unsupported-content">
+                    <div class="unsupported-icon">
+                        <i class="fas fa-exclamation-triangle"></i>
+                    </div>
+                    <h2>Unsupported Operating System</h2>
+                    <p>This application currently supports Windows and Linux operating systems only.</p>
+                    <div class="detected-info">
+                        <span>Detected OS: </span>
+                        <span id="detected-os" class="os-name"></span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- No Results -->
+            <div id="no-results" class="no-results" style="display: none;">
+                <div class="no-results-content">
+                    <i class="fas fa-search"></i>
+                    <h3>No items found</h3>
+                    <p>Try adjusting your search or filter criteria</p>
+                </div>
+            </div>
+
+            <!-- Error Container -->
+            <div id="error-container" class="error-container" style="display: none;">
+                <div class="error-content">
+                    <div class="error-icon">
+                        <i class="fas fa-exclamation-triangle"></i>
+                    </div>
+                    <h2>Configuration Error</h2>
+                    <p id="error-message">Failed to load security checklist configuration</p>
+                    <button id="retry-btn" class="action-btn primary">
+                        <i class="fas fa-redo"></i> Retry
+                    </button>
+                </div>
+            </div>
+        </main>
+
+        <footer class="footer-modern">
+            <div class="progress-section">
+                <div class="progress-info-modern">
+                    <div class="progress-stats">
+                        <span id="progress-text" class="progress-text">Progress: 0/0 items completed</span>
+                        <span id="completion-percentage" class="completion-percentage">0%</span>
+                    </div>
+                    <div class="progress-bar-container">
+                        <div class="progress-bar-modern">
+                            <div id="progress-fill" class="progress-fill-modern">
+                                <div class="progress-glow"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-actions">
+                <div class="keyboard-shortcuts">
+                    <span class="shortcut-hint">
+                        <kbd>Ctrl</kbd> + <kbd>E</kbd> Export • 
+                        <kbd>Ctrl</kbd> + <kbd>R</kbd> Reset • 
+                        <kbd>↑</kbd><kbd>↓</kbd> Navigate
+                    </span>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <script src="renderer.js"></script>
+</body>
+</html>

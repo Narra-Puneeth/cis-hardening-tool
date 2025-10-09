@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CIS Hardening Tool</title>
+    <link rel="stylesheet" href="cis-styles.css">
+</head>
+<body>
+    <!-- Navigation Header -->
+    <header class="app-header">
+        <div class="header-content">
+            <div class="header-left">
+                <div class="logo">
+                    <img src="assets/icon.svg" alt="CIS Hardening Tool" width="32" height="32" class="logo-icon">
+                    <h1>CIS Hardening Tool</h1>
+                </div>
+            </div>
+            <div class="header-right">
+                <button class="theme-toggle" id="themeToggle" onclick="app.toggleTheme()" title="Toggle theme">
+                    <svg class="theme-icon sun-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="5"/>
+                        <line x1="12" y1="1" x2="12" y2="3"/>
+                        <line x1="12" y1="21" x2="12" y2="23"/>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+                        <line x1="1" y1="12" x2="3" y2="12"/>
+                        <line x1="21" y1="12" x2="23" y2="12"/>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+                    </svg>
+                    <svg class="theme-icon moon-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+                    </svg>
+                </button>
+                <div class="platform-badge" id="platformBadge">
+                    <span class="platform-icon">🖥️</span>
+                    <span class="platform-text" id="platformText">Loading...</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <main class="app-main">
+        <!-- Home Page -->
+        <div id="homePage" class="page active">
+            <div class="welcome-container">
+                <div class="hero-section">
+                    <div class="hero-content">
+                        <div class="hero-badge">
+                            <span class="badge-icon">🔒</span>
+                            <span>Industry-Standard Security</span>
+                        </div>
+                        <h1 class="hero-title">CIS Hardening Tool</h1>
+                        <p class="hero-subtitle">Enterprise-grade system security compliance and automated hardening based on CIS benchmarks</p>
+                        
+                        <div class="hero-actions">
+                            <button class="btn btn-hero-primary" onclick="app.showPage('selectionPage')">
+                                <span class="btn-icon">�</span>
+                                <span>Start Hardening</span>
+                                <svg class="btn-arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <line x1="5" y1="12" x2="19" y2="12"/>
+                                    <polyline points="12 5 19 12 12 19"/>
+                                </svg>
+                            </button>
+                            <button class="btn btn-hero-secondary" onclick="app.showQuickHarden()">
+                                <span class="btn-icon">⚡</span>
+                                <span>Quick Harden</span>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="hero-visual">
+                        <div class="stats-grid">
+                            <div class="stat-card">
+                                <div class="stat-icon">🛡️</div>
+                                <div class="stat-value">200+</div>
+                                <div class="stat-label">Security Rules</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-icon">⚡</div>
+                                <div class="stat-value">Auto</div>
+                                <div class="stat-label">Remediation</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-icon">📊</div>
+                                <div class="stat-value">Custom</div>
+                                <div class="stat-label">Profiles</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="features-section">
+                    <div class="section-header">
+                        <h2>Comprehensive Security Features</h2>
+                        <p>Everything you need to secure and harden your system</p>
+                    </div>
+                    
+                    <div class="feature-cards-modern">
+                        <div class="feature-card-modern">
+                            <div class="feature-card-header">
+                                <div class="feature-icon-modern">�</div>
+                                <h3>Security Audit</h3>
+                            </div>
+                            <p>Comprehensive system scanning against CIS benchmarks to identify vulnerabilities and security gaps in your configuration</p>
+                            <div class="feature-tags">
+                                <span class="tag">Compliance Check</span>
+                                <span class="tag">Risk Assessment</span>
+                            </div>
+                        </div>
+                        
+                        <div class="feature-card-modern featured">
+                            <div class="featured-badge">Most Popular</div>
+                            <div class="feature-card-header">
+                                <div class="feature-icon-modern">🔧</div>
+                                <h3>Auto-Remediation</h3>
+                            </div>
+                            <p>Automatically apply security fixes with one click. Smart remediation engine handles complex system configurations safely</p>
+                            <div class="feature-tags">
+                                <span class="tag">Automated</span>
+                                <span class="tag">Safe</span>
+                                <span class="tag">Fast</span>
+                            </div>
+                        </div>
+                        
+                        <div class="feature-card-modern">
+                            <div class="feature-card-header">
+                                <div class="feature-icon-modern">⚙️</div>
+                                <h3>Custom Profiles</h3>
+                            </div>
+                            <p>Create tailored hardening profiles for your specific needs. Choose from preset levels or build your own custom ruleset</p>
+                            <div class="feature-tags">
+                                <span class="tag">Flexible</span>
+                                <span class="tag">Customizable</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="demo-notice" id="demoNotice" style="display: none;">
+                    <div class="notice-icon">ℹ️</div>
+                    <div class="notice-content">
+                        <strong>Demo Mode</strong>
+                        <p>Running on Windows - Audit and Fix features are for demonstration only. Full functionality available on Ubuntu systems.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Rule Selection Page -->
+        <div id="selectionPage" class="page">
+            <div class="page-header">
+                <button class="btn btn-back" onclick="app.showPage('homePage')">
+                    ← Back
+                </button>
+                <h2>Select Hardening Rules</h2>
+            </div>
+
+            <div class="selection-container">
+                <!-- Level Preset Selector -->
+                <div class="preset-selector">
+                    <div class="preset-header">
+                        <h3>Hardening Level</h3>
+                        <p>Choose a preset or customize your selection</p>
+                    </div>
+                    <div class="preset-buttons">
+                        <button class="preset-btn" data-level="high" onclick="app.loadPreset('high')">
+                            <span class="preset-icon">🔴</span>
+                            <span class="preset-name">High</span>
+                            <span class="preset-desc">Maximum Security</span>
+                        </button>
+                        <button class="preset-btn" data-level="medium" onclick="app.loadPreset('medium')">
+                            <span class="preset-icon">🟡</span>
+                            <span class="preset-name">Medium</span>
+                            <span class="preset-desc">Balanced (Recommended)</span>
+                        </button>
+                        <button class="preset-btn" data-level="low" onclick="app.loadPreset('low')">
+                            <span class="preset-icon">🟢</span>
+                            <span class="preset-name">Low</span>
+                            <span class="preset-desc">Basic Security</span>
+                        </button>
+                        <button class="preset-btn active" data-level="custom" onclick="app.loadPreset('custom')">
+                            <span class="preset-icon">⚙️</span>
+                            <span class="preset-name">Custom</span>
+                            <span class="preset-desc">Select Manually</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Search and Filter -->
+                <div class="filter-bar">
+                    <div class="search-box">
+                        <span class="search-icon">🔍</span>
+                        <input type="text" id="ruleSearch" placeholder="Search rules..." oninput="app.filterRules()">
+                    </div>
+                    <div class="filter-controls">
+                        <select id="severityFilter" onchange="app.filterRules()">
+                            <option value="all">All Severities</option>
+                            <option value="critical">Critical</option>
+                            <option value="high">High</option>
+                            <option value="medium">Medium</option>
+                            <option value="low">Low</option>
+                        </select>
+                        <button class="btn btn-small" onclick="app.selectAll()">Select All</button>
+                        <button class="btn btn-small" onclick="app.deselectAll()">Deselect All</button>
+                    </div>
+                </div>
+
+                <!-- Rules List -->
+                <div class="rules-container">
+                    <div class="rules-header">
+                        <div class="rules-count">
+                            <span id="selectedCount">0</span> / <span id="totalCount">0</span> rules selected
+                        </div>
+                    </div>
+                    <div class="rules-list" id="rulesList">
+                        <!-- Rules will be dynamically loaded here -->
+                        <div class="loading">Loading rules...</div>
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="selection-actions">
+                    <button class="btn btn-secondary" onclick="app.saveCustomConfig()">
+                        💾 Save Custom Config
+                    </button>
+                    <button class="btn btn-success" onclick="app.runAudit()">
+                        🔍 Run Audit
+                    </button>
+                    <button class="btn btn-primary" onclick="app.runFix()">
+                        🔧 Apply Fixes
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Audit Page -->
+        <div id="auditPage" class="page">
+            <div class="page-header">
+                <button class="btn btn-back" onclick="app.showPage('selectionPage')">
+                    ← Back to Selection
+                </button>
+                <h2>Security Audit</h2>
+            </div>
+
+            <div class="execution-container">
+                <div class="execution-info">
+                    <div class="info-item">
+                        <span class="info-label">Config:</span>
+                        <span class="info-value" id="auditConfigPath">-</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Level:</span>
+                        <span class="info-value" id="auditLevel">-</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Status:</span>
+                        <span class="info-value status" id="auditStatus">Ready</span>
+                    </div>
+                </div>
+
+                <div class="output-container">
+                    <div class="output-header">
+                        <h3>Audit Output</h3>
+                        <div class="output-controls">
+                            <button class="btn btn-small" onclick="app.clearOutput('auditOutput')">Clear</button>
+                            <button class="btn btn-small" onclick="app.copyOutput('auditOutput')">Copy</button>
+                        </div>
+                    </div>
+                    <div class="output-terminal" id="auditOutput">
+                        <div class="terminal-line">Waiting to start audit...</div>
+                    </div>
+                </div>
+
+                <div class="execution-actions">
+                    <button class="btn btn-primary btn-large" id="startAuditBtn" onclick="app.executeAudit()">
+                        ▶️ Start Audit
+                    </button>
+                    <button class="btn btn-secondary" onclick="app.showPage('selectionPage')">
+                        Cancel
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Fix Page -->
+        <div id="fixPage" class="page">
+            <div class="page-header">
+                <button class="btn btn-back" onclick="app.showPage('selectionPage')">
+                    ← Back to Selection
+                </button>
+                <h2>Apply Security Fixes</h2>
+            </div>
+
+            <div class="execution-container">
+                <div class="warning-banner">
+                    <div class="warning-icon">⚠️</div>
+                    <div class="warning-content">
+                        <strong>Warning:</strong> This will apply security fixes to your system. 
+                        It is strongly recommended to have a backup before proceeding.
+                    </div>
+                </div>
+
+                <div class="execution-info">
+                    <div class="info-item">
+                        <span class="info-label">Config:</span>
+                        <span class="info-value" id="fixConfigPath">-</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Level:</span>
+                        <span class="info-value" id="fixLevel">-</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Status:</span>
+                        <span class="info-value status" id="fixStatus">Ready</span>
+                    </div>
+                </div>
+
+                <div class="output-container">
+                    <div class="output-header">
+                        <h3>Remediation Output</h3>
+                        <div class="output-controls">
+                            <button class="btn btn-small" onclick="app.clearOutput('fixOutput')">Clear</button>
+                            <button class="btn btn-small" onclick="app.copyOutput('fixOutput')">Copy</button>
+                        </div>
+                    </div>
+                    <div class="output-terminal" id="fixOutput">
+                        <div class="terminal-line">Waiting to start remediation...</div>
+                    </div>
+                </div>
+
+                <div class="execution-actions">
+                    <div class="confirmation-checkbox">
+                        <input type="checkbox" id="confirmFix" onchange="app.toggleFixButton()">
+                        <label for="confirmFix">I understand the risks and want to proceed</label>
+                    </div>
+                    <button class="btn btn-danger btn-large" id="startFixBtn" onclick="app.executeFix()" disabled>
+                        🔧 Apply Fixes
+                    </button>
+                    <button class="btn btn-secondary" onclick="app.showPage('selectionPage')">
+                        Cancel
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Rule Details Modal -->
+        <div id="ruleDetailsModal" class="modal">
+            <div class="modal-content modal-large">
+                <div class="modal-header">
+                    <h2>Rule Details</h2>
+                    <button class="modal-close" onclick="app.closeRuleDetails()">×</button>
+                </div>
+                <div class="modal-body">
+                    <div class="rule-detail-section">
+                        <div class="detail-header">
+                            <h3 id="detailRuleNumber" class="detail-rule-number"></h3>
+                            <span id="detailSeverity" class="severity-badge"></span>
+                        </div>
+                        <h2 id="detailTitle" class="detail-title"></h2>
+                    </div>
+                    
+                    <div class="rule-detail-section">
+                        <h3>📋 Description</h3>
+                        <p id="detailDescription" class="detail-text"></p>
+                    </div>
+                    
+                    <div class="rule-detail-section" id="detailRationaleSection">
+                        <h3>💡 Rationale</h3>
+                        <p id="detailRationale" class="detail-text"></p>
+                    </div>
+                    
+                    <div class="rule-detail-section" id="detailRemediationSection">
+                        <h3>🔧 Remediation</h3>
+                        <pre id="detailRemediation" class="detail-code"></pre>
+                    </div>
+                    
+                    <div class="rule-detail-section" id="detailImpactSection">
+                        <h3>⚠️ Impact</h3>
+                        <p id="detailImpact" class="detail-text"></p>
+                    </div>
+                    
+                    <div class="rule-detail-section">
+                        <h3>🔍 Additional Information</h3>
+                        <div class="detail-grid">
+                            <div class="detail-item">
+                                <strong>Rule ID:</strong>
+                                <span id="detailRuleId"></span>
+                            </div>
+                            <div class="detail-item" id="detailLevelItem">
+                                <strong>Level:</strong>
+                                <span id="detailLevel"></span>
+                            </div>
+                            <div class="detail-item" id="detailProfileItem">
+                                <strong>Profile:</strong>
+                                <span id="detailProfile"></span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="rule-detail-actions">
+                        <label class="detail-checkbox">
+                            <input type="checkbox" id="detailSelectCheckbox" onchange="app.toggleRuleFromDetails()">
+                            <span>Include this rule in hardening</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Harden Modal -->
+        <div id="quickHardenModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>Quick Harden</h2>
+                    <button class="modal-close" onclick="app.closeQuickHarden()">×</button>
+                </div>
+                <div class="modal-body">
+                    <p>Select a hardening level to quickly secure your system:</p>
+                    <div class="quick-harden-options">
+                        <button class="quick-option" onclick="app.quickHarden('high')">
+                            <span class="option-icon">🔴</span>
+                            <div class="option-details">
+                                <h3>High Security</h3>
+                                <p>Maximum protection, may impact usability</p>
+                            </div>
+                        </button>
+                        <button class="quick-option" onclick="app.quickHarden('medium')">
+                            <span class="option-icon">🟡</span>
+                            <div class="option-details">
+                                <h3>Medium Security</h3>
+                                <p>Balanced protection (Recommended)</p>
+                            </div>
+                        </button>
+                        <button class="quick-option" onclick="app.quickHarden('low')">
+                            <span class="option-icon">🟢</span>
+                            <div class="option-details">
+                                <h3>Low Security</h3>
+                                <p>Basic protection with minimal changes</p>
+                            </div>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Toast Notifications -->
+    <div id="toastContainer" class="toast-container"></div>
+
+    <script src="cis-renderer.js"></script>
+</body>
+</html>

@@ -1,0 +1,1 @@
+ <Profile id="xccdf_org.ssgproject.content_profile_cis_level2_workstation_customized" extends="xccdf_org.ssgproject.content_profile_standard">
