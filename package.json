@@ -46,6 +46,7 @@
       "cis-renderer.js",
       "index.html",
       "styles.css",
+      "windows/**/*",
       "assets/**/*",
       "config/**/*",
       "cli/**/*"

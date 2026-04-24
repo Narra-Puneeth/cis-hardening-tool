@@ -246,9 +246,9 @@ echo ""
 
 if [ "$OS" != "ubuntu" ] && [ "$OS" != "debian" ]; then
     echo ""
-    print_warning "Note: You're not on Ubuntu"
-    print_info "The application will run in demo mode"
-    print_info "Full audit/fix functionality requires Ubuntu with OpenSCAP"
+    print_info "Note: You're not on Ubuntu"
+    print_info "Full Ubuntu audit/fix functionality requires Ubuntu with OpenSCAP"
+    print_info "Windows functionality uses PowerShell scripts"
 fi
 
 echo ""

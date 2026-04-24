@@ -1,0 +1,33 @@
+step 1 : 
+
+generate tailor xml file based on user selection
+
+step 2 :
+
+usg audit --tailoring-file  tailoringfile.xml (alternative compact cmd)
+
+
+step 3 : 
+
+usg fix --tailoring-file  tailoringfile.xml
+
+step 4 :
+
+usg audit --tailoring-file  tailoringfile.xml (alternative compact cmd)
+
+compact cmd :
+
+oscap xccdf eval --progress --profile xccdf_org.ssgproject.content_profile_cis_level2_workstation_customized --cpe ./ssg-ubuntu2404-cpe-dictionary.xml --results ./usg-results-20251001.1622.xml --tailoring-file ./tailoringfile.xml ./ssg-ubuntu2404-xccdf.xml
+
+output :
+
+puneeth@puneeth-VirtualBox:~$ sudo oscap xccdf eval --progress --profile xccdf_org.ssgproject.content_profile_cis_level2_workstation_customized --cpe /usr/share/ubuntu-scap-security-guides/current/benchmarks/ssg-ubuntu2404-cpe-dictionary.xml --results /var/lib/usg/usg-results-20251001.1622.xml --tailoring-file /home/puneeth/Downloads/tailoringfile.xml /usr/share/ubuntu-scap-security-guides/current/benchmarks/ssg-ubuntu2404-xccdf.xml
+[sudo] password for puneeth: 
+xccdf_org.ssgproject.content_rule_kernel_module_cramfs_disabled:pass
+xccdf_org.ssgproject.content_rule_kernel_module_freevxfs_disabled:pass
+xccdf_org.ssgproject.content_rule_kernel_module_hfs_disabled:pass
+xccdf_org.ssgproject.content_rule_kernel_module_hfsplus_disabled:pass
+xccdf_org.ssgproject.content_rule_kernel_module_jffs2_disabled:pass
+xccdf_org.ssgproject.content_rule_kernel_module_overlayfs_disabled:pass
+xccdf_org.ssgproject.content_rule_kernel_module_udf_disabled:pass
+xccdf_org.ssgproject.content_rule_kernel_module_usb-storage_disabled:pass

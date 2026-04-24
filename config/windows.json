@@ -1,0 +1,110 @@
+{
+  "os": "windows",
+  "displayName": "Windows",
+  "icon": "fab fa-windows",
+  "description": "Configure your Windows system according to security best practices",
+  "categories": [
+    {
+      "id": "account-policies",
+      "title": "1. Account Policies",
+      "icon": "fas fa-user-shield",
+      "description": "User account and authentication security settings",
+      "subcategories": [
+        {
+          "id": "password-policy",
+          "title": "a. Password Policy",
+          "icon": "fas fa-key",
+          "description": "Password strength and management requirements",
+          "items": [
+            {
+              "id": "win-pass-1",
+              "number": "i",
+              "title": "Enforce password history",
+              "description": "Ensure 'Enforce password history' is set to '24 or more password(s)'",
+              "searchTerms": "enforce password history 24 password",
+              "category": "password",
+              "severity": "high",
+              "references": [
+                "CIS Microsoft Windows 10 Stand-alone Benchmark v4.0.0",
+                "NIST SP 800-53 IA-5"
+              ]
+            },
+            {
+              "id": "win-pass-2",
+              "number": "ii",
+              "title": "Maximum password age",
+              "description": "Ensure 'Maximum password age' is set to '90 days, but not 0'",
+              "searchTerms": "maximum password age 90 days",
+              "category": "password",
+              "severity": "high",
+              "references": [
+                "CIS Microsoft Windows 10 Stand-alone Benchmark v4.0.0",
+                "NIST SP 800-53 IA-5"
+              ]
+            },
+            {
+              "id": "win-pass-3",
+              "number": "iii",
+              "title": "Minimum password age",
+              "description": "Ensure 'Minimum password age' is set to '1 day'",
+              "searchTerms": "minimum password age 1 day",
+              "category": "password",
+              "severity": "medium",
+              "references": [
+                "CIS Microsoft Windows 10 Stand-alone Benchmark v4.0.0",
+                "NIST SP 800-53 IA-5"
+              ]
+            },
+            {
+              "id": "win-pass-4",
+              "number": "iv",
+              "title": "Minimum password length",
+              "description": "Ensure 'Minimum password length' is set to '12 or more character(s)'",
+              "searchTerms": "minimum password length 12 characters",
+              "category": "password",
+              "severity": "high",
+              "references": [
+                "CIS Microsoft Windows 10 Stand-alone Benchmark v4.0.0",
+                "NIST SP 800-53 IA-5"
+              ]
+            },
+            {
+              "id": "win-pass-5",
+              "number": "v",
+              "title": "Password complexity requirements",
+              "description": "Ensure 'Password must meet complexity requirements' is set to 'Enabled'",
+              "searchTerms": "password complexity requirements enabled",
+              "category": "password",
+              "severity": "high",
+              "references": [
+                "CIS Microsoft Windows 10 Stand-alone Benchmark v4.0.0",
+                "NIST SP 800-53 IA-5"
+              ]
+            },
+            {
+              "id": "win-pass-6",
+              "number": "vi",
+              "title": "Store passwords using reversible encryption",
+              "description": "Ensure 'Store passwords using reversible encryption' is set to 'Disabled'",
+              "searchTerms": "store passwords reversible encryption disabled",
+              "category": "password",
+              "severity": "critical",
+              "references": [
+                "CIS Microsoft Windows 10 Stand-alone Benchmark v4.0.0",
+                "NIST SP 800-53 IA-5"
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "metadata": {
+    "version": "1.0.0",
+    "lastUpdated": "2025-09-29",
+    "source": "CIS Microsoft Windows 10 Stand-alone Benchmark v4.0.0",
+    "totalItems": 6,
+    "categories": 1,
+    "subcategories": 1
+  }
+}

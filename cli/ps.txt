@@ -1,0 +1,36 @@
+Multi-Platform System Hardening Tool
+Description	
+Background
+Modern operating systems, including Windows, Ubuntu, and CentOS, are widely used in enterprise environments for server and desktop deployments. These systems, by default, may not adhere to strict security baselines. Misconfigurations, exposed services, weak access controls, outdated software, or improper logging can create serious vulnerabilities, leading to data breaches or system compromise.
+
+Problem
+Despite the existence of CIS Benchmarks and other security standards, manual hardening of operating systems is:
+• Time-consuming
+• Error-prone
+• Inconsistent across platforms
+• Difficult to audit and verify
+
+Furthermore, system administrators often lack a centralized tool to automatically assess, enforce, and report compliance of Windows and Linux systems against industry-standard hardening policies.
+
+Objective
+To develop an automated, cross-platform security hardening tool that:
+• Supports Windows (Windows 10 and Windows 11), Ubuntu (20.04 onwards), and CentOS (7 onwards)
+• Applies parameters provided on Annexure – ‘A’ for Window OS and on Annexure – ‘B’ for Linux OS
+• Generates detailed compliance reports for hardening parameter (previous value/State, current value/State and successful, unsuccessful)
+• Is easy to use for both experienced and novice administrators
+• If Administrator wants rollback to previous setting, that also can be done
+
+Key Features
+OS Detection & Modular Hardening Engine
+o Detects the target OS and runs appropriate modules
+o Customizable hardening level and their values (basic, moderate, strict)
+Security Checks & Remediation
+o As per Annexure - ‘A’ for Windows OS and Annexure - ‘B’ for Linux OS
+Reporting and Logging
+o Exports PDF reports with severity ratings
+o Logs all actions with timestamps for audit trails
+CLI & GUI Interfaces
+o CLI for automation and scripting
+o Optional GUI for ease of use
+Rollback Capability
+o Stores previous configurations for rollback after enforcement

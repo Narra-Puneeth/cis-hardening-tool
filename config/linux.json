@@ -1,0 +1,163 @@
+{
+  "os": "linux",
+  "displayName": "Linux",
+  "icon": "fab fa-linux",
+  "description": "Configure your Linux system according to security best practices",
+  "categories": [
+    {
+      "id": "filesystem",
+      "title": "1. Filesystem",
+      "icon": "fas fa-hdd",
+      "description": "File system security and kernel module configuration",
+      "subcategories": [
+        {
+          "id": "filesystem-modules",
+          "title": "a. Configure Filesystem Kernel Modules",
+          "icon": "fas fa-puzzle-piece",
+          "description": "Disable unnecessary filesystem kernel modules to reduce attack surface",
+          "items": [
+            {
+              "id": "linux-fs-1",
+              "number": "i",
+              "title": "cramfs kernel module",
+              "description": "Ensure cramfs kernel module is not available",
+              "searchTerms": "cramfs kernel module not available",
+              "category": "filesystem",
+              "severity": "medium",
+              "script": "scripts/linux/filesystem-security.sh",
+              "references": [
+                "CIS Ubuntu Linux 24.04 LTS Benchmark v1.0.0",
+                "NIST SP 800-53 CM-7"
+              ]
+            },
+            {
+              "id": "linux-fs-2",
+              "number": "ii",
+              "title": "freevxfs kernel module",
+              "description": "Ensure freevxfs kernel module is not available",
+              "searchTerms": "freevxfs kernel module not available",
+              "category": "filesystem",
+              "severity": "medium",
+              "references": [
+                "CIS Ubuntu Linux 24.04 LTS Benchmark v1.0.0",
+                "NIST SP 800-53 CM-7"
+              ]
+            },
+            {
+              "id": "linux-fs-3",
+              "number": "iii",
+              "title": "hfs kernel module",
+              "description": "Ensure hfs kernel module is not available",
+              "searchTerms": "hfs kernel module not available",
+              "category": "filesystem",
+              "severity": "medium",
+              "references": [
+                "CIS Ubuntu Linux 24.04 LTS Benchmark v1.0.0",
+                "NIST SP 800-53 CM-7"
+              ]
+            },
+            {
+              "id": "linux-fs-4",
+              "number": "iv",
+              "title": "hfsplus kernel module",
+              "description": "Ensure hfsplus kernel module is not available",
+              "searchTerms": "hfsplus kernel module not available",
+              "category": "filesystem",
+              "severity": "medium",
+              "references": [
+                "CIS Ubuntu Linux 24.04 LTS Benchmark v1.0.0",
+                "NIST SP 800-53 CM-7"
+              ]
+            },
+            {
+              "id": "linux-fs-5",
+              "number": "v",
+              "title": "jffs2 kernel module",
+              "description": "Ensure jffs2 kernel module is not available",
+              "searchTerms": "jffs2 kernel module not available",
+              "category": "filesystem",
+              "severity": "medium",
+              "references": [
+                "CIS Ubuntu Linux 24.04 LTS Benchmark v1.0.0",
+                "NIST SP 800-53 CM-7"
+              ]
+            },
+            {
+              "id": "linux-fs-6",
+              "number": "vi",
+              "title": "overlayfs kernel module",
+              "description": "Ensure overlayfs kernel module is not available",
+              "searchTerms": "overlayfs kernel module not available",
+              "category": "filesystem",
+              "severity": "medium",
+              "references": [
+                "CIS Ubuntu Linux 24.04 LTS Benchmark v1.0.0",
+                "NIST SP 800-53 CM-7"
+              ]
+            },
+            {
+              "id": "linux-fs-7",
+              "number": "vii",
+              "title": "squashfs kernel module",
+              "description": "Ensure squashfs kernel module is not available",
+              "searchTerms": "squashfs kernel module not available",
+              "category": "filesystem",
+              "severity": "medium",
+              "references": [
+                "CIS Ubuntu Linux 24.04 LTS Benchmark v1.0.0",
+                "NIST SP 800-53 CM-7"
+              ]
+            },
+            {
+              "id": "linux-fs-8",
+              "number": "viii",
+              "title": "udf kernel module",
+              "description": "Ensure udf kernel module is not available",
+              "searchTerms": "udf kernel module not available",
+              "category": "filesystem",
+              "severity": "medium",
+              "references": [
+                "CIS Ubuntu Linux 24.04 LTS Benchmark v1.0.0",
+                "NIST SP 800-53 CM-7"
+              ]
+            },
+            {
+              "id": "linux-fs-9",
+              "number": "ix",
+              "title": "usb-storage kernel module",
+              "description": "Ensure usb-storage kernel module is not available",
+              "searchTerms": "usb storage kernel module not available",
+              "category": "filesystem",
+              "severity": "high",
+              "references": [
+                "CIS Ubuntu Linux 24.04 LTS Benchmark v1.0.0",
+                "NIST SP 800-53 CM-7"
+              ]
+            },
+            {
+              "id": "linux-fs-10",
+              "number": "x",
+              "title": "unused filesystems kernel modules",
+              "description": "Ensure unused filesystems kernel modules are not available",
+              "searchTerms": "unused filesystems kernel modules not available",
+              "category": "filesystem",
+              "severity": "medium",
+              "references": [
+                "CIS Ubuntu Linux 24.04 LTS Benchmark v1.0.0",
+                "NIST SP 800-53 CM-7"
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "metadata": {
+    "version": "1.0.0",
+    "lastUpdated": "2025-09-29",
+    "source": "CIS Ubuntu Linux 24.04 LTS Benchmark v1.0.0",
+    "totalItems": 10,
+    "categories": 1,
+    "subcategories": 1
+  }
+}

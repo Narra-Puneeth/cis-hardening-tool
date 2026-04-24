@@ -1,0 +1,96 @@
+<pre>root@puneeth-VirtualBox:/home/puneeth/Downloads# usg fix --tailoring-file  tailoringfile.xml
+USG will execute the following command for auditing: oscap  xccdf eval --profile xccdf_org.ssgproject.content_profile_cis_level2_workstation_customized --cpe /usr/share/ubuntu-scap-security-guides/current/benchmarks/ssg-ubuntu2404-cpe-dictionary.xml --results /var/lib/usg/usg-results-20251001.1622.xml --tailoring-file /home/puneeth/Downloads/tailoringfile.xml  /usr/share/ubuntu-scap-security-guides/current/benchmarks/ssg-ubuntu2404-xccdf.xml
+--- Starting Evaluation ---
+
+Title   <b>Disable Mounting of cramfs</b>
+Rule    xccdf_org.ssgproject.content_rule_kernel_module_cramfs_disabled
+Result  <font color="#C01C28">fail</font>
+
+Title   <b>Disable Mounting of freevxfs</b>
+Rule    xccdf_org.ssgproject.content_rule_kernel_module_freevxfs_disabled
+Result  <font color="#C01C28">fail</font>
+
+Title   <b>Disable Mounting of hfs</b>
+Rule    xccdf_org.ssgproject.content_rule_kernel_module_hfs_disabled
+Result  <font color="#C01C28">fail</font>
+
+Title   <b>Disable Mounting of hfsplus</b>
+Rule    xccdf_org.ssgproject.content_rule_kernel_module_hfsplus_disabled
+Result  <font color="#C01C28">fail</font>
+
+Title   <b>Disable Mounting of jffs2</b>
+Rule    xccdf_org.ssgproject.content_rule_kernel_module_jffs2_disabled
+Result  <font color="#C01C28">fail</font>
+
+Title   <b>Ensure overlayfs kernel module is not available</b>
+Rule    xccdf_org.ssgproject.content_rule_kernel_module_overlayfs_disabled
+Result  <font color="#C01C28">fail</font>
+
+Title   <b>Disable Mounting of udf</b>
+Rule    xccdf_org.ssgproject.content_rule_kernel_module_udf_disabled
+Result  <font color="#C01C28">fail</font>
+
+Title   <b>Disable Modprobe Loading of USB Storage Driver</b>
+Rule    xccdf_org.ssgproject.content_rule_kernel_module_usb-storage_disabled
+Result  <font color="#C01C28">fail</font>
+
+USG will execute the following command for generating fix: oscap xccdf generate --profile xccdf_org.ssgproject.content_profile_cis_level2_workstation_customized fix --fix-type bash --tailoring-file /home/puneeth/Downloads/tailoringfile.xml  /usr/share/ubuntu-scap-security-guides/current/benchmarks/ssg-ubuntu2404-xccdf.xml &gt; /var/lib/usg/xccdf_org.ssgproject.content_profile_cis_level2_workstation_customized-20251001.1622.sh
+USG generate-fix command completed.
+USG will execute the following command for remediating: bash -x /var/lib/usg/xccdf_org.ssgproject.content_profile_cis_level2_workstation_customized-20251001.1622.sh 2&gt;&amp;1 1&gt;remediation-20251001.1622.log | tee -a remediation-20251001.1622.log
+Remediating rule 1/8: &apos;xccdf_org.ssgproject.content_rule_kernel_module_cramfs_disabled&apos;
+grep: /etc/modprobe.d/cramfs.conf: No such file or directory
+Remediating rule 2/8: &apos;xccdf_org.ssgproject.content_rule_kernel_module_freevxfs_disabled&apos;
+grep: /etc/modprobe.d/freevxfs.conf: No such file or directory
+Remediating rule 3/8: &apos;xccdf_org.ssgproject.content_rule_kernel_module_hfs_disabled&apos;
+grep: /etc/modprobe.d/hfs.conf: No such file or directory
+Remediating rule 4/8: &apos;xccdf_org.ssgproject.content_rule_kernel_module_hfsplus_disabled&apos;
+grep: /etc/modprobe.d/hfsplus.conf: No such file or directory
+Remediating rule 5/8: &apos;xccdf_org.ssgproject.content_rule_kernel_module_jffs2_disabled&apos;
+grep: /etc/modprobe.d/jffs2.conf: No such file or directory
+Remediating rule 6/8: &apos;xccdf_org.ssgproject.content_rule_kernel_module_overlayfs_disabled&apos;
+grep: /etc/modprobe.d/overlayfs.conf: No such file or directory
+Remediating rule 7/8: &apos;xccdf_org.ssgproject.content_rule_kernel_module_udf_disabled&apos;
+grep: /etc/modprobe.d/udf.conf: No such file or directory
+Remediating rule 8/8: &apos;xccdf_org.ssgproject.content_rule_kernel_module_usb-storage_disabled&apos;
+grep: /etc/modprobe.d/usb-storage.conf: No such file or directory
+USG fix command completed.
+A system reboot is required to complete the fix process.
+Please run usg audit after reboot.
+root@puneeth-VirtualBox:/home/puneeth/Downloads# usg audit --tailoring-file  tailoringfile.xml
+USG will execute the following command for auditing: oscap  xccdf eval --profile xccdf_org.ssgproject.content_profile_cis_level2_workstation_customized --cpe /usr/share/ubuntu-scap-security-guides/current/benchmarks/ssg-ubuntu2404-cpe-dictionary.xml --results /var/lib/usg/usg-results-20251001.1623.xml --tailoring-file /home/puneeth/Downloads/tailoringfile.xml  /usr/share/ubuntu-scap-security-guides/current/benchmarks/ssg-ubuntu2404-xccdf.xml
+--- Starting Evaluation ---
+
+Title   <b>Disable Mounting of cramfs</b>
+Rule    xccdf_org.ssgproject.content_rule_kernel_module_cramfs_disabled
+Result  <font color="#26A269">pass</font>
+
+Title   <b>Disable Mounting of freevxfs</b>
+Rule    xccdf_org.ssgproject.content_rule_kernel_module_freevxfs_disabled
+Result  <font color="#26A269">pass</font>
+
+Title   <b>Disable Mounting of hfs</b>
+Rule    xccdf_org.ssgproject.content_rule_kernel_module_hfs_disabled
+Result  <font color="#26A269">pass</font>
+
+Title   <b>Disable Mounting of hfsplus</b>
+Rule    xccdf_org.ssgproject.content_rule_kernel_module_hfsplus_disabled
+Result  <font color="#26A269">pass</font>
+
+Title   <b>Disable Mounting of jffs2</b>
+Rule    xccdf_org.ssgproject.content_rule_kernel_module_jffs2_disabled
+Result  <font color="#26A269">pass</font>
+
+Title   <b>Ensure overlayfs kernel module is not available</b>
+Rule    xccdf_org.ssgproject.content_rule_kernel_module_overlayfs_disabled
+Result  <font color="#26A269">pass</font>
+
+Title   <b>Disable Mounting of udf</b>
+Rule    xccdf_org.ssgproject.content_rule_kernel_module_udf_disabled
+Result  <font color="#26A269">pass</font>
+
+Title   <b>Disable Modprobe Loading of USB Storage Driver</b>
+Rule    xccdf_org.ssgproject.content_rule_kernel_module_usb-storage_disabled
+Result  <font color="#26A269">pass</font>
+
+USG audit scan command completed. The scan results are available in /var/lib/usg/usg-report-20251001.1623.html report or in /var/lib/usg/usg-results-20251001.1623.xml.
+root@puneeth-VirtualBox:/home/puneeth/Downloads#</pre>

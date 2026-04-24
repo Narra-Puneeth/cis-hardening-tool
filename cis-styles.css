@@ -674,25 +674,7 @@ body.light-theme .moon-icon {
     margin-bottom: var(--spacing-xl);
 }
 
-.demo-notice {
-    background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(16, 185, 129, 0.1));
-    border: 1px solid var(--info-color);
-    border-radius: var(--radius-lg);
-    padding: var(--spacing-lg);
-    display: flex;
-    gap: var(--spacing-md);
-    align-items: flex-start;
-}
 
-.notice-icon {
-    font-size: 1.5rem;
-}
-
-.notice-content strong {
-    display: block;
-    margin-bottom: var(--spacing-xs);
-    color: var(--info-color);
-}
 
 /* Buttons */
 .btn {

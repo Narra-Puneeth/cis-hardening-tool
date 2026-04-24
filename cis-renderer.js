@@ -1,5 +1,216 @@
 // CIS Hardening Tool - Main Renderer
 
+const fs = require('fs');
+const fsp = fs.promises;
+const path = require('path');
+const os = require('os');
+const { spawn } = require('child_process');
+
+const runtime = {
+    getBasePath() {
+        return __dirname;
+    },
+
+    getResourcePath(relativePath) {
+        return path.join(this.getBasePath(), relativePath);
+    },
+
+    getPlatformInfo() {
+        const platform = os.platform();
+        return {
+            platform,
+            isWindows: platform === 'win32',
+            isLinux: platform === 'linux' || platform === 'darwin',
+            isMac: platform === 'darwin'
+        };
+    },
+
+    async loadCISConfig(osType) {
+        let configFile;
+
+        if (osType === 'windows' || osType === 'win32') {
+            const cannonTablePath = this.getResourcePath('config/windows-11-standalone-table-t.json');
+            configFile = fs.existsSync(cannonTablePath)
+                ? cannonTablePath
+                : this.getResourcePath('config/windows-11-standalone.json');
+        } else {
+            configFile = this.getResourcePath('config/CIS_Ubuntu_Benchmark_MS.json');
+        }
+
+        const configData = await fsp.readFile(configFile, 'utf-8');
+        return {
+            success: true,
+            config: JSON.parse(configData),
+            configFile
+        };
+    },
+
+    async loadLevelPreset(level) {
+        const configFile = this.getResourcePath(`config/${level}.xml`);
+        await fsp.access(configFile);
+        const xmlContent = await fsp.readFile(configFile, 'utf-8');
+        const ruleMatches = xmlContent.matchAll(/idref="([^"]+)"\s+selected="true"/g);
+        return {
+            success: true,
+            rules: Array.from(ruleMatches, (m) => m[1]),
+            level
+        };
+    },
+
+    normalizeSelectedRules(selectedRules) {
+        return (selectedRules || [])
+            .map((rule) => (typeof rule === 'string' ? rule : (rule?.ruleId || rule?.id || rule?.number || null)))
+            .filter(Boolean);
+    },
+
+    normalizeRuleNumbers(ruleIds) {
+        return ruleIds.map((rule) => {
+            if (/^rule_/.test(rule)) {
+                return rule.replace(/^rule_/, '').replace(/_/g, '.');
+            }
+            return rule;
+        });
+    },
+
+    async generateConfig(selectedRules, configName, isWindows) {
+        const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, -5);
+        const generatedDir = path.join(this.getBasePath(), 'generated');
+        await fsp.mkdir(generatedDir, { recursive: true });
+
+        if (isWindows) {
+            const normalizedRules = this.normalizeSelectedRules(selectedRules);
+            const normalizedRuleNumbers = this.normalizeRuleNumbers(normalizedRules);
+            const fileName = `${configName || 'custom'}-${timestamp}.json`;
+            const filePath = path.join(generatedDir, fileName);
+
+            const config = {
+                generatedAt: new Date().toISOString(),
+                configName: configName || 'custom',
+                selectedRules: normalizedRules,
+                selectedRuleNumbers: normalizedRuleNumbers
+            };
+
+            await fsp.writeFile(filePath, JSON.stringify(config, null, 2), 'utf-8');
+            return { success: true, filePath, fileName };
+        }
+
+        const fileName = `${configName || 'custom'}-${timestamp}.xml`;
+        const filePath = path.join(generatedDir, fileName);
+        const templatePath = this.getResourcePath('config/high.xml');
+        let xmlContent = await fsp.readFile(templatePath, 'utf-8');
+
+        xmlContent = xmlContent.replace(/selected="true"/g, 'selected="false"');
+
+        this.normalizeSelectedRules(selectedRules).forEach((ruleId) => {
+            const regex = new RegExp(`(idref="${ruleId}"[^>]*?)selected="false"`, 'g');
+            xmlContent = xmlContent.replace(regex, '$1selected="true"');
+        });
+
+        xmlContent = xmlContent.replace(
+            /<Profile[^>]+>/,
+            '<Profile id="xccdf_org.ssgproject.content_profile_cis_level2_workstation_customized" extends="xccdf_org.ssgproject.content_profile_standard">'
+        );
+        xmlContent = xmlContent.replace(
+            /<dc:title>[^<]*<\/dc:title>/,
+            `<dc:title>Custom CIS Hardening - ${configName || 'Generated'}</dc:title>`
+        );
+
+        await fsp.writeFile(filePath, xmlContent, 'utf-8');
+        return { success: true, filePath, fileName };
+    },
+
+    buildAuditCommand(configPath, level, isWindows) {
+        if (isWindows) {
+            const cannonAuditPath = this.getResourcePath('cli/win_cli/CIS_Microsoft_Windows_11_Stand-alone_v3.0.0_L1 (2).ps1');
+            if (fs.existsSync(cannonAuditPath)) {
+                return {
+                    program: 'powershell.exe',
+                    args: ['-NoProfile', '-ExecutionPolicy', 'Bypass', '-File', cannonAuditPath]
+                };
+            }
+
+            const windowsCliPath = this.getResourcePath('cli/win_cli/cis-hardening.ps1');
+            return {
+                program: 'powershell.exe',
+                args: ['-NoProfile', '-ExecutionPolicy', 'Bypass', '-File', windowsCliPath, 'audit', '-ConfigFile', configPath, '-NonInteractive']
+            };
+        }
+
+        const cliPath = this.getResourcePath('cli/usg-hardening-cli-gui.sh');
+        const targetConfig = configPath || this.getResourcePath(`config/${level}.xml`);
+        return {
+            program: 'sudo',
+            args: ['bash', cliPath, 'audit', '--config-file', targetConfig]
+        };
+    },
+
+    buildFixCommand(configPath, level, isWindows) {
+        if (isWindows) {
+            const windowsCliPath = this.getResourcePath('cli/win_cli/cis-hardening.ps1');
+            return {
+                program: 'powershell.exe',
+                args: [
+                    '-NoProfile',
+                    '-ExecutionPolicy',
+                    'Bypass',
+                    '-File',
+                    windowsCliPath,
+                    'fix',
+                    '-ConfigFile',
+                    configPath,
+                    '-NonInteractive',
+                    '-AutoConfirm',
+                    '-NoRebootPrompt'
+                ]
+            };
+        }
+
+        const cliPath = this.getResourcePath('cli/usg-hardening-cli-gui.sh');
+        const targetConfig = configPath || this.getResourcePath(`config/${level}.xml`);
+        return {
+            program: 'sudo',
+            args: ['bash', cliPath, 'fix', '--config-file', targetConfig]
+        };
+    },
+
+    executeCommand(command, onOutput) {
+        return new Promise((resolve, reject) => {
+            const proc = spawn(command.program, command.args || [], {
+                cwd: this.getBasePath(),
+                env: { ...process.env }
+            });
+
+            let output = '';
+            let errorOutput = '';
+
+            proc.stdout.on('data', (data) => {
+                const chunk = data.toString();
+                output += chunk;
+                onOutput(chunk);
+            });
+
+            proc.stderr.on('data', (data) => {
+                const chunk = data.toString();
+                errorOutput += chunk;
+                onOutput(chunk);
+            });
+
+            proc.on('close', (code) => {
+                resolve({
+                    success: code === 0,
+                    output,
+                    error: errorOutput,
+                    exitCode: code
+                });
+            });
+
+            proc.on('error', (error) => {
+                reject(error);
+            });
+        });
+    }
+};
+
 // Global State
 const app = {
     platform: null,
@@ -59,7 +270,7 @@ const app = {
     // Detect the operating system platform
     async detectPlatform() {
         try {
-            const platformInfo = await window.electronAPI.getOSPlatform();
+            const platformInfo = runtime.getPlatformInfo();
             this.platform = platformInfo.platform;
             this.isWindows = platformInfo.isWindows;
             this.isLinux = platformInfo.isLinux;
@@ -75,8 +286,6 @@ const app = {
                 platformIcon.innerHTML = `<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
                     <path d="M0 3.449L9.75 2.1v9.451H0m10.949-9.602L24 0v11.4H10.949M0 12.6h9.75v9.451L0 20.699M10.949 12.6H24V24l-12.9-1.801"/>
                 </svg>`;
-                // Hide demo notice to make it look real
-                document.getElementById('demoNotice').style.display = 'none';
             } else if (this.isLinux) {
                 platformText.textContent = 'Ubuntu Linux';
                 platformIcon.innerHTML = `<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
@@ -96,7 +305,7 @@ const app = {
     async loadCISConfiguration() {
         try {
             const osType = this.isWindows ? 'windows' : 'linux';
-            const result = await window.electronAPI.loadCISConfig(osType);
+            const result = await runtime.loadCISConfig(osType);
             
             if (result.success) {
                 this.cisConfig = result.config;
@@ -129,11 +338,38 @@ const app = {
     // Process Windows rules from windows-11-standalone.json
     processWindowsRules() {
         if (!this.cisConfig) return;
+
+        const firstValue = this.cisConfig[Object.keys(this.cisConfig)[0]];
+        const isFlatPolicyMap = firstValue && typeof firstValue === 'object' && !firstValue.subcategories && (firstValue.details || firstValue.title);
+
+        if (isFlatPolicyMap) {
+            this.processWindowsFlatRules();
+            return;
+        }
         
         Object.entries(this.cisConfig).forEach(([categoryId, category]) => {
             if (category.subcategories) {
                 this.processWindowsCategory(category, categoryId);
             }
+        });
+    },
+
+    processWindowsFlatRules() {
+        Object.entries(this.cisConfig).forEach(([ruleNumber, guideline]) => {
+            if (!guideline || typeof guideline !== 'object') return;
+
+            this.allRules.push({
+                number: ruleNumber || guideline.number || 'N/A',
+                title: guideline.title || 'No title',
+                description: guideline.details?.Description || guideline.description || 'No description',
+                severity: this.detectSeverity(guideline.title, guideline.details?.Level),
+                ruleId: `rule_${String(ruleNumber || guideline.number || '').replace(/\./g, '_')}`,
+                category: Array.isArray(guideline.path) && guideline.path.length > 0 ? guideline.path[0] : 'General',
+                level: guideline.details?.Level || null,
+                rationale: guideline.details?.Rationale || null,
+                remediation: guideline.details?.Remediation || null,
+                impact: guideline.details?.Impact || null
+            });
         });
     },
 
@@ -214,12 +450,7 @@ const app = {
 
     // Set up event listeners
     setupEventListeners() {
-        // Listen for command output (real-time)
-        window.electronAPI.onCommandOutput((data) => {
-            // Route output to the correct terminal based on current operation
-            const terminalId = this.currentOperation === 'fix' ? 'fixOutput' : 'auditOutput';
-            this.appendOutput(data, terminalId);
-        });
+        // No IPC event wiring is needed in direct-execution mode.
     },
 
     // Page Navigation
@@ -265,7 +496,7 @@ const app = {
         // For Ubuntu, load preset from XML files
         if (this.isLinux) {
             try {
-                const result = await window.electronAPI.loadLevelPreset(level);
+                const result = await runtime.loadLevelPreset(level);
                 
                 if (result.success) {
                     this.selectedRules.clear();
@@ -282,7 +513,7 @@ const app = {
                 this.showToast('Error', `Failed to load ${level} preset`, 'error');
             }
         } else {
-            // For Windows demo, select rules based on severity
+            // For Windows, select rules based on severity
             this.selectedRules.clear();
             this.allRules.forEach(rule => {
                 if (this.shouldSelectForLevel(rule, level)) {
@@ -425,16 +656,11 @@ const app = {
             return;
         }
         
-        if (this.isWindows) {
-            this.showToast('Info', 'Configuration ready for deployment', 'success');
-            return;
-        }
-        
         try {
             const configName = `custom_${Date.now()}`;
             const selectedRulesArray = Array.from(this.selectedRules);
             
-            const result = await window.electronAPI.generateTailoringXML(selectedRulesArray, configName);
+            const result = await runtime.generateConfig(selectedRulesArray, configName, this.isWindows);
             
             if (result.success) {
                 this.generatedConfigPath = result.filePath;
@@ -460,7 +686,7 @@ const app = {
         
         // Set audit info
         document.getElementById('auditLevel').textContent = this.currentLevel;
-        document.getElementById('auditConfigPath').textContent = this.generatedConfigPath || `${this.currentLevel}.xml`;
+        document.getElementById('auditConfigPath').textContent = this.generatedConfigPath || `${this.currentLevel}.${this.isWindows ? 'json' : 'xml'}`;
         document.getElementById('auditStatus').textContent = 'Ready';
     },
 
@@ -483,11 +709,23 @@ const app = {
             let configPath = this.generatedConfigPath;
             let level = this.currentLevel === 'custom' ? null : this.currentLevel;
             
+            if (this.isWindows && this.selectedRules.size > 0) {
+                const configName = `temp_audit_${Date.now()}`;
+                const selectedRulesArray = Array.from(this.selectedRules);
+                const result = await runtime.generateConfig(selectedRulesArray, configName, true);
+
+                if (result.success) {
+                    configPath = result.filePath;
+                } else {
+                    throw new Error('Failed to generate Windows configuration');
+                }
+            }
+
             // If custom with selected rules, generate config first
             if (this.currentLevel === 'custom' && this.selectedRules.size > 0 && this.isLinux) {
                 const configName = `temp_audit_${Date.now()}`;
                 const selectedRulesArray = Array.from(this.selectedRules);
-                const result = await window.electronAPI.generateTailoringXML(selectedRulesArray, configName);
+                const result = await runtime.generateConfig(selectedRulesArray, configName, false);
                 
                 if (result.success) {
                     configPath = result.filePath;
@@ -496,60 +734,17 @@ const app = {
                 }
             }
             
-            const result = await window.electronAPI.executeAudit(configPath, level);
-            
-            if (result.isDemo) {
-                // Windows mode - show professional output with delays
-                const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
-                
-                // Helper function to pad text for perfect box alignment (60 chars width)
-                const padLine = (text) => {
-                    const width = 60;
-                    const padding = width - text.length;
-                    const leftPad = Math.floor(padding / 2);
-                    const rightPad = padding - leftPad;
-                    return '║' + ' '.repeat(leftPad) + text + ' '.repeat(rightPad) + '║\n';
-                };
-                
-                this.appendOutput('╔════════════════════════════════════════════════════════════╗\n');
-                this.appendOutput(padLine('CIS Hardening Tool - Windows Security Scanner'));
-                this.appendOutput(padLine('Version 1.0.0'));
-                this.appendOutput('╚════════════════════════════════════════════════════════════╝\n\n');
-                await delay(300);
-                
-                this.appendOutput('ℹ Scanning system for CIS Windows 11 Benchmark compliance...\n\n');
-                await delay(400);
-                
-                this.appendOutput('Selected rules: ' + this.selectedRules.size + '\n');
-                this.appendOutput('Security level: ' + this.currentLevel + '\n\n');
-                await delay(500);
-                
-                this.appendOutput('✓ System scan initialized\n');
-                await delay(600);
-                
-                this.appendOutput('✓ Loading security policies...\n');
-                await delay(700);
-                
-                this.appendOutput('✓ Analyzing configurations...\n\n');
-                await delay(800);
-                
-                this.appendOutput('→ For full audit execution, please run on target system\n\n');
-                
-                statusEl.textContent = 'Scan Complete';
+            const command = runtime.buildAuditCommand(configPath, level, this.isWindows);
+            const cmdResult = await runtime.executeCommand(command, (chunk) => {
+                this.appendOutput(chunk, 'auditOutput');
+            });
+
+            if (cmdResult.success) {
+                statusEl.textContent = 'Completed';
                 statusEl.style.background = '#4CAF50';
-            } else if (result.success) {
-                // Execute the command
-                const cmdResult = await window.electronAPI.executeShellCommand(result.command);
-                
-                if (cmdResult.success) {
-                    statusEl.textContent = 'Completed';
-                    statusEl.style.background = '#4CAF50';
-                    this.showToast('Success', 'Audit completed successfully', 'success');
-                } else {
-                    throw new Error(cmdResult.error);
-                }
+                this.showToast('Success', 'Audit completed successfully', 'success');
             } else {
-                throw new Error(result.error);
+                throw new Error(cmdResult.error || `Audit command failed (exit code: ${cmdResult.exitCode})`);
             }
         } catch (error) {
             console.error('Audit error:', error);
@@ -575,7 +770,7 @@ const app = {
         
         // Set fix info
         document.getElementById('fixLevel').textContent = this.currentLevel;
-        document.getElementById('fixConfigPath').textContent = this.generatedConfigPath || `${this.currentLevel}.xml`;
+        document.getElementById('fixConfigPath').textContent = this.generatedConfigPath || `${this.currentLevel}.${this.isWindows ? 'json' : 'xml'}`;
         document.getElementById('fixStatus').textContent = 'Ready';
         
         // Reset confirmation
@@ -609,11 +804,23 @@ const app = {
             let configPath = this.generatedConfigPath;
             let level = this.currentLevel === 'custom' ? null : this.currentLevel;
             
+            if (this.isWindows && this.selectedRules.size > 0) {
+                const configName = `temp_fix_${Date.now()}`;
+                const selectedRulesArray = Array.from(this.selectedRules);
+                const result = await runtime.generateConfig(selectedRulesArray, configName, true);
+
+                if (result.success) {
+                    configPath = result.filePath;
+                } else {
+                    throw new Error('Failed to generate Windows configuration');
+                }
+            }
+
             // If custom with selected rules, generate config first
             if (this.currentLevel === 'custom' && this.selectedRules.size > 0 && this.isLinux) {
                 const configName = `temp_fix_${Date.now()}`;
                 const selectedRulesArray = Array.from(this.selectedRules);
-                const result = await window.electronAPI.generateTailoringXML(selectedRulesArray, configName);
+                const result = await runtime.generateConfig(selectedRulesArray, configName, false);
                 
                 if (result.success) {
                     configPath = result.filePath;
@@ -621,58 +828,18 @@ const app = {
                     throw new Error('Failed to generate configuration');
                 }
             }
-            
-            const result = await window.electronAPI.executeFix(configPath, level);
-            
-            if (result.isDemo) {
-                // Windows mode - show professional output with delays
-                const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
-                
-                // Helper function to pad text for perfect box alignment (60 chars width)
-                const padLine = (text) => {
-                    const width = 60;
-                    const padding = width - text.length;
-                    const leftPad = Math.floor(padding / 2);
-                    const rightPad = padding - leftPad;
-                    return '║' + ' '.repeat(leftPad) + text + ' '.repeat(rightPad) + '║\n';
-                };
-                
-                this.appendOutput('╔════════════════════════════════════════════════════════════╗\n', 'fixOutput');
-                this.appendOutput(padLine('CIS Hardening Tool - Windows Security Fix'), 'fixOutput');
-                this.appendOutput(padLine('Version 1.0.0'), 'fixOutput');
-                this.appendOutput('╚════════════════════════════════════════════════════════════╝\n\n', 'fixOutput');
-                await delay(300);
-                
-                this.appendOutput('ℹ Preparing remediation actions...\n\n', 'fixOutput');
-                await delay(400);
-                
-                this.appendOutput('Selected rules: ' + this.selectedRules.size + '\n', 'fixOutput');
-                this.appendOutput('Security level: ' + this.currentLevel + '\n\n', 'fixOutput');
-                await delay(500);
-                
-                this.appendOutput('✓ Security policies loaded\n', 'fixOutput');
-                await delay(600);
-                
-                this.appendOutput('✓ Remediation plan generated\n\n', 'fixOutput');
-                await delay(700);
-                
-                this.appendOutput('→ Ready for deployment on target system\n\n', 'fixOutput');
-                
-                statusEl.textContent = 'Ready';
+
+            const command = runtime.buildFixCommand(configPath, level, this.isWindows);
+            const cmdResult = await runtime.executeCommand(command, (chunk) => {
+                this.appendOutput(chunk, 'fixOutput');
+            });
+
+            if (cmdResult.success) {
+                statusEl.textContent = 'Completed';
                 statusEl.style.background = '#4CAF50';
-            } else if (result.success) {
-                // Execute the command
-                const cmdResult = await window.electronAPI.executeShellCommand(result.command);
-                
-                if (cmdResult.success) {
-                    statusEl.textContent = 'Completed';
-                    statusEl.style.background = '#4CAF50';
-                    this.showToast('Success', 'Security fixes applied successfully', 'success');
-                } else {
-                    throw new Error(cmdResult.error);
-                }
+                this.showToast('Success', 'Security fixes applied successfully', 'success');
             } else {
-                throw new Error(result.error);
+                throw new Error(cmdResult.error || `Fix command failed (exit code: ${cmdResult.exitCode})`);
             }
         } catch (error) {
             console.error('Fix error:', error);
